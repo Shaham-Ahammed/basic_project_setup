@@ -1,21 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
-class CoreSetupController extends ChangeNotifier {
-  static final CoreSetupController _dataClass = CoreSetupController._internal();
+import '../common/route/router_config.dart';
+import '../localization/localization.dart';
+import '../utils/themes/themes.dart';
 
-  factory CoreSetupController() {
-    return _dataClass;
-  }
+class CoreSetup extends StatelessWidget {
+  const CoreSetup({
+    super.key,
+  });
 
-  CoreSetupController._internal();
-
-  Locale _currentLocale = const Locale('en');
-
-  Locale get currentLocale => _currentLocale;
-
-  void changeLocale() {
-    _currentLocale =
-        _currentLocale == Locale('en') ? Locale('ar') : Locale('en');
-    notifyListeners();
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: LocalizationManager(),
+      builder: (context, child) => ValueListenableBuilder<ThemeMode>(
+        valueListenable: AppThemes.appTheme,
+        builder: (context, theme, child) => MaterialApp.router(
+          themeMode: theme,
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          routerConfig: goRouterConfiguration,
+          supportedLocales: [
+            const Locale('en'), // English
+            const Locale('ar'), // Arabic
+          ],
+          locale: LocalizationManager.currentLocale,
+          debugShowCheckedModeBanner: false,
+          theme: AppThemes.lightTheme,
+          darkTheme: AppThemes.darkTheme,
+        ),
+      ),
+    );
   }
 }
